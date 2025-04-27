@@ -16,22 +16,18 @@
       position:relative;
       width:100%;
       min-height:100%;
-      padding:6rem 1rem 12rem; /* extra bottom padding */
+      padding:6rem 1rem 12rem;
       overflow-x:hidden;
       overflow-y:auto;
     }
 
-    /* CONNECTORS */
+    /* CONNECTOR LINES */
     .mindmap svg.lines {
-      position:absolute; top:0; left:0;
-      width:100%; height:100%;
-      pointer-events:none;
+      position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;
     }
     .mindmap svg.lines line {
       stroke:#bbb; stroke-width:2; stroke-dasharray:4 4;
     }
-
-    /* Desktop vs Mobile connectors */
     .desktop-3a, .desktop-3b { display:block; }
     .mobile-3a,  .mobile-3b  { display:none;  }
 
@@ -42,18 +38,30 @@
       width:200px;
       background:#fff;
       border-radius:12px;
-      box-shadow:0 6px 16px rgba(0,0,0,0.1);
       padding:1rem;
       text-align:center;
-      transition:transform .2s,box-shadow .2s;
       cursor:pointer;
+      transition:transform .2s, box-shadow .2s;
     }
     .node:hover {
       transform:translate(-50%,-50%) scale(1.05);
-      box-shadow:0 8px 20px rgba(0,0,0,0.15);
     }
 
-    /* ICON ANIMATION */
+    /* HAPPY / ANGRY CONSTANT GLOWS */
+    .happy {
+      box-shadow:0 0 12px rgba(52,168,83,0.4), 0 6px 16px rgba(0,0,0,0.1);
+    }
+    .happy:hover {
+      box-shadow:0 0 16px rgba(52,168,83,0.8), 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .angry {
+      box-shadow:0 0 12px rgba(219,68,55,0.4), 0 6px 16px rgba(0,0,0,0.1);
+    }
+    .angry:hover {
+      box-shadow:0 0 16px rgba(219,68,55,0.8), 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    /* ICON POP-IN */
     .icon {
       display:block; margin:0 auto .5rem;
       width:48px; height:48px; fill:#4a90e2;
@@ -65,13 +73,33 @@
       100% { transform:scale(1); }
     }
 
-    /* STARS ROW */
+    /* MAIN STARS (Step 2) */
     .stars {
       display:flex; justify-content:center;
       margin:.25rem 0 .5rem;
     }
     .stars svg {
       width:18px; height:18px; margin:0 2px; fill:#fbbc04;
+      animation:shimmer 1.5s infinite alternate;
+    }
+    @keyframes shimmer {
+      from { filter:brightness(1); } to { filter:brightness(1.3); }
+    }
+
+    /* helper for step3A/3B stars */
+    .stars-small {
+      display:flex; justify-content:center;
+      margin:.25rem 0 .5rem;
+    }
+    .star {
+      width:16px; height:16px; margin:0 2px;
+    }
+    .star.filled {
+      fill:#fbbc04;
+      animation:shimmer 1.5s infinite alternate;
+    }
+    .star.empty {
+      fill:#ddd;
     }
 
     /* +1 PULSE */
@@ -93,11 +121,11 @@
       display:flex; align-items:center;
       background:#fff; border:1px solid #ddd;
       border-radius:8px; padding:.5rem;
-      margin:.5rem 0; box-shadow:0 4px 12px rgba(0,0,0,0.1);
-      font-size:.85rem; text-align:left;
+      margin:.5rem 0; font-size:.85rem; text-align:left;
+      transition:box-shadow .2s;
     }
-    .gmail-notif svg { width:20px; height:20px; margin-right:.4rem; fill:#d93025; }
-    .maps-notif   svg { width:20px; height:20px; margin-right:.4rem; fill:#4285F4; }
+    .gmail-notif svg { width:20px; height:20px; margin-right:.4rem; fill:#d93025 }
+    .maps-notif   svg { width:20px; height:20px; margin-right:.4rem; fill:#4285F4 }
 
     /* TOOLTIP */
     .tooltip {
@@ -111,16 +139,12 @@
     }
 
     @media (max-width:600px) {
-      /* node sizing */
       .node { width:160px; padding:.8rem; }
-      .icon { width:40px; height:40px; }
-
-      /* push bottom nodes to 115% */
-      .mindmap > div.node:nth-of-type(4),
-      .mindmap > div.node:nth-of-type(6) {
+      /* push bottom branches farther down */
+      .mindmap > div:nth-of-type(4),
+      .mindmap > div:nth-of-type(6) {
         top:115% !important;
       }
-
       /* swap connectors */
       .desktop-3a, .desktop-3b { display:none !important; }
       .mobile-3a,  .mobile-3b  { display:block  !important; }
@@ -130,25 +154,23 @@
 <body>
   <div class="mindmap">
 
-    <!-- SVG CONNECTORS -->
+    <!-- CONNECTOR LINES -->
     <svg class="lines" xmlns="http://www.w3.org/2000/svg">
-      <!-- top flow -->
-      <line x1="50%" y1="15%" x2="50%" y2="42%"/><!--1→2-->
-      <line x1="50%" y1="42%" x2="25%" y2="70%"/><!--2→3A-->
-      <line x1="50%" y1="42%" x2="75%" y2="70%"/><!--2→3B-->
-
-      <!-- desktop bottom -->
+      <line x1="50%" y1="15%" x2="50%" y2="42%"/>
+      <line x1="50%" y1="42%" x2="25%" y2="70%"/>
+      <line x1="50%" y1="42%" x2="75%" y2="70%"/>
       <line class="desktop-3a" x1="25%" y1="70%" x2="25%" y2="100%"/>
       <line class="desktop-3b" x1="75%" y1="70%" x2="75%" y2="100%"/>
-
-      <!-- mobile bottom -->
       <line class="mobile-3a"  x1="25%" y1="70%" x2="25%" y2="115%"/>
       <line class="mobile-3b"  x1="75%" y1="70%" x2="75%" y2="115%"/>
     </svg>
 
     <!-- STEP 1 -->
     <div class="node" style="top:15%; left:50%;" data-tip="One tap—no app download. Instantly opens your review page.">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h10v10H7z" stroke="#4a90e2" fill="none" stroke-width="2"/><path d="M9 9v6m6-6v6" stroke="#4a90e2" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg class="icon" viewBox="0 0 24 24">
+        <path d="M7 7h10v10H7z" stroke="#4a90e2" fill="none" stroke-width="2"/>
+        <path d="M9 9v6m6-6v6" stroke="#4a90e2" stroke-width="2" stroke-linecap="round"/>
+      </svg>
       <h3>Step 1<br><strong>Tap NFC Card</strong></h3>
       <p>Auto-redirect to mobile landing page</p>
     </div>
@@ -166,16 +188,29 @@
       <p>Instant “How was your experience?”</p>
     </div>
 
-    <!-- STEP 3A -->
-    <div class="node" style="top:70%; left:25%;" data-tip="4–5 stars? Redirect to Google—boost your public rating instantly.">
-      <svg class="icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" stroke="#4a90e2" stroke-width="2" fill="none"/><circle cx="22" cy="24" r="4"/><circle cx="42" cy="24" r="4"/><path d="M22 44 q10 10 20 0" stroke="#4a90e2" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
-      <h3>Step 3A<br><strong>4–5 Stars</strong></h3>
+    <!-- STEP 3A HAPPY WITH 5 GLOWING STARS -->
+    <div class="node happy" style="top:70%; left:25%;" data-tip="4–5 stars? Redirect to Google—boost your public rating instantly.">
+      <svg class="icon" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="30" stroke="#4a90e2" stroke-width="2" fill="none"/>
+        <circle cx="22" cy="24" r="4"/><circle cx="42" cy="24" r="4"/>
+        <path d="M22 44 q10 10 20 0" stroke="#4a90e2" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>
+      <h3>Step 3A</h3>
+      <div class="stars-small">
+        <svg class="star filled" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
+        <svg class="star filled" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
+        <svg class="star filled" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
+        <svg class="star filled" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
+        <svg class="star filled" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
+      </div>
       <p>Redirect to Google Review page</p>
     </div>
 
-    <!-- +1 REVIEW -->
-    <div class="node" style="top:100%; left:25%;" data-tip="You just gained +1 on your Google Business Profile!">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+    <!-- +1 REVIEW HAPPY -->
+    <div class="node happy" style="top:100%; left:25%;" data-tip="You just gained +1 on your Google Business Profile!">
+      <svg class="icon" viewBox="0 0 24 24">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+      </svg>
       <h3><strong>+1 Review</strong><br>Google Business Profile</h3>
       <div class="plus-one"></div>
       <div class="maps-notif">
@@ -184,16 +219,31 @@
       </div>
     </div>
 
-    <!-- STEP 3B -->
-    <div class="node" style="top:70%; left:75%;" data-tip="1–3 stars? Private feedback only—no negative review ever appears publicly.">
-      <svg class="icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" stroke="#4a90e2" stroke-width="2" fill="none"/><path d="M20 24 l8 8M44 24 l-8 8" stroke="#4a90e2" stroke-width="3" stroke-linecap="round"/><path d="M22 44 q10 -6 20 0" stroke="#4a90e2" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
-      <h3>Step 3B<br><strong>1–3 Stars</strong></h3>
+    <!-- STEP 3B ANGRY WITH 1 GLOWING STAR -->
+    <div class="node angry" style="top:70%; left:75%;" data-tip="1–3 stars? Private feedback only—no negative review ever appears publicly.">
+      <svg class="icon" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="30" stroke="#4a90e2" stroke-width="2" fill="none"/>
+        <path d="M20 24 l8 8M44 24 l-8 8" stroke="#4a90e2" stroke-width="3" stroke-linecap="round"/>
+        <path d="M22 44 q10 -6 20 0" stroke="#4a90e2" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>
+      <h3>Step 3B</h3>
+      <div class="stars-small">
+        <svg class="star filled" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
+        <svg class="star empty"  viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
+        <svg class="star empty"  viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
+        <svg class="star empty"  viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
+        <svg class="star empty"  viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
+      </div>
       <p>Redirect to private feedback form</p>
     </div>
 
-    <!-- STEP 4 -->
-    <div class="node" style="top:100%; left:75%;" data-tip="Name, phone & message collected—actionable insights delivered only to you.">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4z" fill="none" stroke="#4a90e2" stroke-width="2"/><path d="M8 10h8M8 14h8" stroke="#4a90e2" stroke-width="2"/><circle cx="12" cy="18" r="1.5" fill="#4a90e2"/></svg>
+    <!-- STEP 4 ANGRY -->
+    <div class="node angry" style="top:100%; left:75%;" data-tip="Name, phone & message collected—actionable insights delivered only to you.">
+      <svg class="icon" viewBox="0 0 24 24">
+        <path d="M4 4h16v16H4z" fill="none" stroke="#4a90e2" stroke-width="2"/>
+        <path d="M8 10h8M8 14h8" stroke="#4a90e2" stroke-width="2"/>
+        <circle cx="12" cy="18" r="1.5" fill="#4a90e2"/>
+      </svg>
       <h3>Step 4<br><strong>Private Feedback</strong></h3>
       <p>Sent only to you—no public damage</p>
       <div class="gmail-notif">
@@ -219,8 +269,8 @@
         if (top < 8) top = r.bottom + 8;
         left = Math.max(8, Math.min(left, window.innerWidth - tooltip.clientWidth - 8));
         top  = Math.max(8, Math.min(top, window.innerHeight - tooltip.clientHeight - 8));
-        tooltip.style.left = `${left}px`;
-        tooltip.style.top  = `${top}px`;
+        tooltip.style.left = left + 'px';
+        tooltip.style.top  = top + 'px';
       });
     }
     document.querySelectorAll('.node').forEach(node => {
@@ -228,11 +278,9 @@
       node.addEventListener('mouseleave', () => tooltip.style.opacity = '0');
       node.addEventListener('click', e => {
         e.stopPropagation();
-        if (tooltip.style.opacity === '1') {
-          tooltip.style.opacity = '0';
-        } else {
-          showTooltip(node);
-        }
+        tooltip.style.opacity === '1'
+          ? tooltip.style.opacity = '0'
+          : showTooltip(node);
       });
     });
     document.body.addEventListener('click', () => tooltip.style.opacity = '0');
