@@ -49,6 +49,16 @@
       transform:translate(-50%,-50%) scale(1.05);
     }
 
+    /* STEP 1 & 2 BLUE GLOW */
+    .mindmap > div.node:nth-of-type(1),
+    .mindmap > div.node:nth-of-type(2) {
+      box-shadow:0 0 12px rgba(74,144,226,0.4), 0 6px 16px rgba(0,0,0,0.1);
+    }
+    .mindmap > div.node:nth-of-type(1):hover,
+    .mindmap > div.node:nth-of-type(2):hover {
+      box-shadow:0 0 16px rgba(74,144,226,0.8), 0 8px 20px rgba(0,0,0,0.15);
+    }
+
     /* HAPPY / ANGRY GLOWS */
     .happy {
       box-shadow:0 0 12px rgba(52,168,83,0.4), 0 6px 16px rgba(0,0,0,0.1);
@@ -215,7 +225,7 @@
     <!-- STEP 3B ANGRY with angry-customer icon & 1 glowing star -->
     <div class="node angry" style="top:70%; left:75%;" data-tip="Private feedback only—no negative review ever appears publicly.">
       <img class="icon" src="https://static.vecteezy.com/system/resources/previews/007/923/835/non_2x/mad-and-angry-customer-semi-flat-color-object-vector.jpg" alt="Angry customer icon">
-      <h3>Angry Csutomer</h3>
+      <h3>Angry Customer</h3>
       <div class="stars-small">
         <svg class="star filled" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
         <svg class="star empty"  viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
