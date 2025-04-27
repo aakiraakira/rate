@@ -115,19 +115,16 @@
       100% { transform:scale(1); opacity:0; }
     }
 
-    /* NOTIFICATION ICONS */
-    .notif-icon {
-      width:20px;
-      height:20px;
-      margin-right:.4rem;
-      display:block;
-    }
+    /* NOTIFICATIONS */
     .gmail-notif, .maps-notif {
       display:flex; align-items:center;
       background:#fff; border:1px solid #ddd;
       border-radius:8px; padding:.5rem;
       margin:.5rem 0; font-size:.85rem; text-align:left;
       transition:box-shadow .2s;
+    }
+    .notif-icon {
+      width:20px; height:20px; margin-right:.4rem;
     }
 
     /* TOOLTIP */
@@ -190,9 +187,9 @@
       <p>Instant “How was your experience?”</p>
     </div>
 
-    <!-- STEP 3A (HAPPY) with 5 glowing stars -->
+    <!-- STEP 3A HAPPY with happy-customer icon & 5 glowing stars -->
     <div class="node happy" style="top:70%; left:25%;" data-tip="Redirect to Google—boost your public rating instantly.">
-      <svg class="icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" stroke="#4a90e2" stroke-width="2" fill="none"/><circle cx="22" cy="24" r="4"/><circle cx="42" cy="24" r="4"/><path d="M22 44 q10 10 20 0" stroke="#4a90e2" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+      <img class="icon" src="https://static.thenounproject.com/png/1212107-200.png" alt="Happy customer icon">
       <h3>Step 3A</h3>
       <div class="stars-small">
         <svg class="star filled" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
@@ -204,9 +201,9 @@
       <p>Redirect to Google Review page</p>
     </div>
 
-    <!-- +1 REVIEW (HAPPY) with Google Maps icon -->
+    <!-- +1 REVIEW HAPPY with Google Review Logo -->
     <div class="node happy" style="top:100%; left:25%;" data-tip="You just gained +1 on your Google Business Profile!">
-      <img class="icon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Google_Maps_icon_%282020%29.svg/1200px-Google_Maps_icon_%282020%29.svg.png" alt="Google Maps icon">
+      <img class="icon" src="https://logos-world.net/wp-content/uploads/2023/12/Google-Review-Logo.png" alt="Google Review logo">
       <h3><strong>+1 Review</strong><br>Google Business Profile</h3>
       <div class="plus-one"></div>
       <div class="maps-notif">
@@ -215,9 +212,9 @@
       </div>
     </div>
 
-    <!-- STEP 3B (ANGRY) with 1 glowing star -->
+    <!-- STEP 3B ANGRY with angry-customer icon & 1 glowing star -->
     <div class="node angry" style="top:70%; left:75%;" data-tip="Private feedback only—no negative review ever appears publicly.">
-      <svg class="icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" stroke="#4a90e2" stroke-width="2" fill="none"/><path d="M20 24 l8 8M44 24 l-8 8" stroke="#4a90e2" stroke-width="3" stroke-linecap="round"/><path d="M22 44 q10 -6 20 0" stroke="#4a90e2" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
+      <img class="icon" src="https://static.vecteezy.com/system/resources/previews/007/923/835/non_2x/mad-and-angry-customer-semi-flat-color-object-vector.jpg" alt="Angry customer icon">
       <h3>Step 3B</h3>
       <div class="stars-small">
         <svg class="star filled" viewBox="0 0 24 24"><polygon points="12,2 15,10 23,10 17,14 19,22 12,17 5,22 7,14 1,10 9,10"/></svg>
@@ -229,7 +226,7 @@
       <p>Redirect to private feedback form</p>
     </div>
 
-    <!-- STEP 4 (ANGRY) with Gmail icon -->
+    <!-- STEP 4 ANGRY with Gmail icon -->
     <div class="node angry" style="top:100%; left:75%;" data-tip="Name, phone & message collected—actionable insights delivered only to you.">
       <img class="icon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Gmail_icon_%282020%29.svg/1280px-Gmail_icon_%282020%29.svg.png" alt="Gmail icon">
       <h3>Step 4<br><strong>Private Feedback</strong></h3>
@@ -245,7 +242,7 @@
   </div>
 
   <script>
-    // TOOLTIP WITH FLIP-IF-OFFSCREEN
+    // TOOLTIP WITH BOUNDARY FLIP
     const tooltip = document.getElementById('tooltip');
     function showTooltip(node) {
       tooltip.textContent = node.getAttribute('data-tip');
