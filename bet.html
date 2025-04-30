@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Mines Game - Casino Guide</title>
   <style>
-    :root { /* colors */
+    :root {
       --bg-main: #14202b;
       --panel-bg: #1a2533;
       --input-bg: #0f1724;
@@ -18,48 +18,54 @@
       --safe-color: #10b981;
       --overlay-bg: rgba(0,0,0,0.8);
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    html, body { width:100%; height:100%; font-family:Arial, sans-serif; background:var(--bg-main); color:var(--text-light); }
-    body { display:flex; }
-    .sidebar { width:280px; background:var(--panel-bg); padding:20px; display:flex; flex-direction:column; gap:16px; }
-    .control { display:flex; flex-direction:column; gap:6px; font-size:14px; }
-    .control label { color:var(--text-secondary); }
-    .control input, .control select { padding:8px; background:var(--input-bg); border:none; border-radius:4px; color:var(--text-light); font-size:14px; }
-    .extras { display:flex; gap:8px; margin-top:4px; }
-    .extras button { flex:1; padding:6px; font-size:14px; border:none; border-radius:4px; background:var(--input-bg); color:var(--text-light); cursor:pointer; }
-    button { outline:none; }
-    #betBtn, #cashOutBtn, #addMoneyBtn { padding:12px; font-size:16px; border:none; border-radius:4px; cursor:pointer; color:var(--text-light); }
-    #betBtn { background:var(--button-green); }
-    #cashOutBtn { background:var(--button-cash); display:none; margin-top:10px; }
-    #addMoneyBtn { background:#2563eb; margin-top:10px; }
-    .game { flex:1; position:relative; padding:20px; }
-    .grid { display:grid; grid-template-columns:repeat(5,1fr); gap:5px; background:var(--panel-bg); padding:10px; border-radius:4px; justify-content:center; }
-    .cell { background:var(--input-bg); border:2px solid var(--cell-border); border-radius:4px; width:64px; height:64px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:28px; user-select:none; }
-    .cell.disabled { cursor:default; }
-    .cell.pop { animation:pop 0.3s ease; }
-    .cell.shine { animation:shineAnim 1s ease-in-out forwards; }
-    .cell.explosion { animation:explodeAnim 0.8s ease forwards; }
-    .overlay { z-index:10; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--overlay-bg); padding:20px; border-radius:8px; text-align:center; display:none; }
-    .overlay .mult { font-size:32px; margin-bottom:8px; }
-    .overlay .mult.flash { animation:flash 0.5s ease-in-out 4; }
-    .overlay .win { font-size:20px; color:var(--button-green); }
-    .notification { z-index:20; position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); padding:20px 40px; border-radius:8px; font-size:32px; display:none; color:#fff; }
-    .notification.win { background:var(--button-green); }
-    .notification.loss { background:var(--mine-color); }
-    @media(max-width:768px){
-      body{flex-direction:column;}
-      .game{order:1;padding:10px; flex:none;} /* prevent full-height blank space */
-      body { flex-direction:column; }
-      .game { order:1; padding:10px; }
-      .sidebar { order:2; width:100%; padding:10px; }
-      .grid { gap:4px; padding:8px; }
-      .cell { width:48px; height:48px; font-size:20px; }
-      #betBtn, #cashOutBtn, #addMoneyBtn { font-size:14px; padding:10px; }
-      .overlay { padding:15px; }
-      .overlay .mult { font-size:24px; }
-      .overlay .win { font-size:18px; }
-      .notification { font-size:24px; padding:15px 30px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; font-family: Arial, sans-serif; background: var(--bg-main); color: var(--text-light); }
+    body { display: flex; }
+    .sidebar { width: 280px; background: var(--panel-bg); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .control { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+    .control label { color: var(--text-secondary); }
+    .control input, .control select { padding: 8px; background: var(--input-bg); border: none; border-radius: 4px; color: var(--text-light); font-size: 14px; }
+    .extras { display: flex; gap: 8px; margin-top: 4px; }
+    .extras button { flex: 1; padding: 6px; font-size: 14px; border: none; border-radius: 4px; background: var(--input-bg); color: var(--text-light); cursor: pointer; }
+    #betBtn, #cashOutBtn, #addMoneyBtn { padding: 12px; font-size: 16px; border: none; border-radius: 4px; cursor: pointer; color: var(--text-light); }
+    #betBtn { background: var(--button-green); }
+    #cashOutBtn { background: var(--button-cash); display: none; margin-top: 10px; }
+    #addMoneyBtn { background: #2563eb; margin-top: 10px; }
+    .game { flex: 1; position: relative; padding: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; background: var(--panel-bg); padding: 10px; border-radius: 4px; justify-content: center; }
+    .cell { background: var(--input-bg); border: 2px solid var(--cell-border); border-radius: 4px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 28px; user-select: none; }
+    .cell.disabled { cursor: default; }
+    @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    @keyframes shineAnim { 0% { box-shadow: 0 0 5px var(--safe-color); } 50% { box-shadow: 0 0 15px var(--safe-color); } 100% { box-shadow: 0 0 5px var(--safe-color); } }
+    @keyframes explodeAnim { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.8; } 100% { transform: scale(0); opacity: 0; } }
+    .pop { animation: pop 0.3s ease; }
+    .shine { animation: shineAnim 0.8s ease-in-out forwards; }
+    .explosion { animation: explodeAnim 0.8s ease forwards; }
+    .overlay { z-index: 10; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--overlay-bg); padding: 20px; border-radius: 8px; text-align: center; display: none; }
+    .overlay .mult { font-size: 32px; margin-bottom: 8px; }
+    .overlay .mult.flash { animation: flash 0.5s ease-in-out 4; }
+    .overlay .win { font-size: 20px; color: var(--button-green); }
+    .notification { z-index: 20; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); padding: 20px 40px; border-radius: 8px; font-size: 32px; display: none; color: #fff; }
+    .notification.win { background: var(--button-green); }
+    .notification.loss { background: var(--mine-color); }
+    @media(max-width:768px) {
+      body { flex-direction: column; }
+      .game { order: 1; padding: 10px; flex: none; }
+      .sidebar { order: 2; width: 100%; padding: 10px; }
+      .grid { gap: 4px; padding: 8px; }
+      .cell { width: 48px; height: 48px; font-size: 20px; }
+      #betBtn, #cashOutBtn, #addMoneyBtn { font-size: 14px; padding: 10px; }
+      .overlay { padding: 15px; }
+      .overlay .mult { font-size: 24px; }
+      .overlay .win { font-size: 18px; }
+      .notification { font-size: 24px; padding: 15px 30px; }
     }
+    /* Balance glow animation */
+    @keyframes balance-pop { 0%{transform:scale(1);}50%{transform:scale(1.2);}100%{transform:scale(1);} }
+    @keyframes balance-glow { 0%{box-shadow:none;}50%{box-shadow:0 0 10px var(--safe-color);}100%{box-shadow:none;} }
+    #balance.glow { animation: balance-pop 0.3s ease, balance-glow 0.8s ease-in-out; }
+    .gain { margin-left: 8px; opacity: 0; color: var(--safe-color); font-size: 14px; transition: opacity 0.3s ease, transform 0.3s ease; display: inline-block; }
+    .gain.show { opacity: 1; transform: translateY(-10px); }
   </style>
 </head>
 <body>
@@ -74,7 +80,9 @@
   <div class="sidebar">
     <div class="control">
       <label>Balance ($)</label>
-      <div id="balance">$1.00</div>
+      <div id="balanceContainer">
+        <span id="balance">$1.00</span><span id="gain" class="gain"></span>
+      </div>
       <button id="addMoneyBtn">Add Money</button>
     </div>
     <div class="control">
@@ -92,162 +100,24 @@
     <button id="cashOutBtn">Cash Out</button>
   </div>
   <script>
-    const gridEl = document.getElementById('grid'), overlay = document.getElementById('overlay'), notif = document.getElementById('notification'), multEl = document.getElementById('overlayMult'), winEl = document.getElementById('overlayWin');
-    const betBtn = document.getElementById('betBtn'), cashBtn = document.getElementById('cashOutBtn'), addBtn = document.getElementById('addMoneyBtn');
-    const betAmtInput = document.getElementById('betAmount'), minesSel = document.getElementById('mines');
+    const gridEl = document.getElementById('grid');
+    const overlay = document.getElementById('overlay');
+    const notif = document.getElementById('notification');
+    const multEl = document.getElementById('overlayMult');
+    const winEl = document.getElementById('overlayWin');
+    const betBtn = document.getElementById('betBtn');
+    const cashBtn = document.getElementById('cashOutBtn');
+    const addBtn = document.getElementById('addMoneyBtn');
+    const betAmtInput = document.getElementById('betAmount');
+    const minesSel = document.getElementById('mines');
     const balanceEl = document.getElementById('balance');
+    const gainEl = document.getElementById('gain');
 
-    let cells = [], mines = new Set(), revealed = 0;
-    let currentMul = 1, roundBet = 0, balance = 1.0, baseBalance = 1.0, activeRound = false;
-    const totalCells = 25;
-
-    function updateBalance(val) {
-      balanceEl.textContent = '$' + val.toFixed(2);
-    }
-    function showNotification(msg, type) {
-      notif.textContent = msg;
-      notif.className = 'notification ' + type;
-      notif.style.display = 'block';
-      setTimeout(() => notif.style.display = 'none', 2000);
-    }
-
-    addBtn.onclick = () => {
-      balance += 1.0;
-      updateBalance(balance);
-    };
-
-    // populate mines dropdown
-    (function() {
-      for (let i = 1; i <= 24; i++) {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = i;
-        if (i === 3) opt.selected = true;
-        minesSel.appendChild(opt);
-      }
-    })();
-
-    function createGrid() {
-      gridEl.innerHTML = '';
-      cells = [];
-      for (let i = 0; i < totalCells; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.dataset.idx = i;
-        cell.addEventListener('click', onCellClick);
-        gridEl.appendChild(cell);
-        cells.push(cell);
-      }
-    }
-
-    function setupMines() {
-      mines.clear();
-      const m = +minesSel.value;
-      while (mines.size < m) mines.add(Math.floor(Math.random() * totalCells));
-    }
-
-    function onCellClick(e) {
-      if (!activeRound) return;
-      const cell = e.currentTarget;
-      const idx = +cell.dataset.idx;
-      if (cell.classList.contains('disabled')) return;
-
-      cell.classList.add('disabled', 'pop');
-      cell.addEventListener('animationend', () => cell.classList.remove('pop'), { once: true });
-      cashBtn.style.display = 'block';
-      cashBtn.disabled = false;
-
-      if (mines.has(idx)) {
-        activeRound = false;
-        cell.textContent = '💣';
-        cell.classList.add('explosion');
-        setTimeout(() => cell.classList.remove('explosion'), 800);
-        revealAllMines();
-        showOverlay();
-        showNotification('-$' + roundBet.toFixed(2), 'loss');
-        updateBalance(baseBalance);
-      } else {
-        revealed++;
-        cell.textContent = '💎';
-        cell.classList.add('shine');
-        setTimeout(() => cell.classList.remove('shine'), 1000);
-
-        const m = +minesSel.value;
-        const factor = (totalCells - (revealed - 1)) / (totalCells - m - (revealed - 1));
-        currentMul *= factor;
-        multEl.textContent = currentMul.toFixed(2) + '×';
-        multEl.classList.add('flash');
-        multEl.addEventListener('animationend', () => multEl.classList.remove('flash'), { once: true });
-
-        const potentialWin = roundBet * currentMul;
-        winEl.textContent = '$' + potentialWin.toFixed(2);
-        updateBalance(baseBalance + potentialWin);
-        showOverlay();
-      }
-    }
-
-    function revealAllMines() {
-      mines.forEach(i => {
-        const c = cells[i];
-        if (!c.classList.contains('disabled')) {
-          c.classList.add('disabled');
-          c.textContent = '💣';
-        }
-      });
-    }
-
-    function showOverlay() {
-      overlay.style.display = 'block';
-      setTimeout(() => overlay.style.display = 'none', 1500);
-    }
-
-    betBtn.onclick = () => {
-      const bet = parseFloat(betAmtInput.value) || 0;
-      if (bet <= 0) { alert('Bet amount must be > $0.00'); return; }
-      if (bet > balance) { alert('You dont have enough money brokie!'); return; }
-
-      roundBet = bet;
-      balance -= bet;
-      baseBalance = balance;
-      updateBalance(balance);
-
-      revealed = 0;
-      currentMul = 1;
-      activeRound = true;
-      cashBtn.style.display = 'none';
-      cashBtn.disabled = true;
-      createGrid();
-      setupMines();
-      overlay.style.display = 'none';
-    };
-
-    cashBtn.onclick = () => {
-      cashBtn.style.display = 'none';
-      if (!activeRound) return;
-      const winAmt = roundBet * currentMul;
-      balance += winAmt;
-      updateBalance(balance);
-      showNotification('+$' + winAmt.toFixed(2), 'win');
-      currentMul = 1;
-      roundBet = 0;
-      activeRound = false;
-      createGrid();
-      setupMines();
-      overlay.style.display = 'none';
-    };
-
-    document.getElementById('half').onclick = () => {
-      const v = parseFloat(betAmtInput.value) || 0;
-      betAmtInput.value = (v / 2).toFixed(2);
-    };
-    document.getElementById('double').onclick = () => {
-      const v = parseFloat(betAmtInput.value) || 0;
-      betAmtInput.value = (v * 2).toFixed(2);
-    };
-
-    createGrid();
-    setupMines();
-    updateBalance(balance);
-  </script>
-</body>
-</html>
+    let cells = [];
+    let mines = new Set();
+    let revealed = 0;
+    let currentMul = 1;
+    let roundBet = 0;
+    let balance = 1.0;
+    let baseBalance = 1.0;
+    let a
