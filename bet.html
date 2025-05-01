@@ -85,7 +85,7 @@
     /* Notification */
     .notification { z-index:20; position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); padding:20px 40px; border-radius:8px; font-size:32px; display:none; color:#fff; }
     .notification.win { background:var(--button-green); }
-    .notification.loss { background:var(--button-cash); }
+    .notification.loss { background: var(--mine-color); }
 
     /* Mobile adjustments */
     @media(max-width:768px) {
@@ -165,7 +165,18 @@
     function setupMines(){mines.clear();const m=+minesSel.value;while(mines.size<m)mines.add(Math.floor(Math.random()*totalCells));}
     function onCellClick(e){if(!activeRound)return;const c=e.currentTarget,idx=+c.dataset.idx;if(c.classList.contains('disabled'))return;c.classList.add('disabled','pop');c.addEventListener('animationend',()=>c.classList.remove('pop'),{once:true});
       if(mines.has(idx)){
-        activeRound=false;c.textContent='💣';c.classList.add('explosion');setTimeout(()=>c.classList.remove('explosion'),800);revealAllMines();showOverlay();showNotification('-$'+roundBet.toFixed(2),'loss');updateBalance(baseBalance);betBtn.disabled=false;betAmtInput.disabled=false;minesSel.disabled=false;cashBtn.textContent='Bet Again';cashBtn.style.display='block';
+        // loss
+        activeRound=false;
+        c.textContent='💣';
+        c.classList.add('explosion');
+        setTimeout(()=>c.classList.remove('explosion'),800);
+        revealAllMines();
+        // hide any overlay on loss to prevent overlap
+        overlay.style.display='none';
+        showNotification('-$'+roundBet.toFixed(2),'loss');
+        updateBalance(baseBalance);
+        betBtn.disabled=false; betAmtInput.disabled=false; minesSel.disabled=false;
+        cashBtn.textContent='Bet Again'; cashBtn.style.display='block';
       } else {
         revealed++;c.textContent='💎';c.classList.add('shine');setTimeout(()=>c.classList.remove('shine'),1000);confetti({particleCount:100,spread:60,origin:{y:0.2}});
         const m=+minesSel.value,factor=(totalCells-(revealed-1))/(totalCells-m-(revealed-1));currentMul*=factor;multEl.textContent=currentMul.toFixed(2)+'×';multEl.classList.add('flash');multEl.addEventListener('animationend',()=>multEl.classList.remove('flash'),{once:true});
