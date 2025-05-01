@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mines Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <audio id="chaChingSound" src="https://actions.google.com/sounds/v1/cash/coin_drop.ogg" preload="auto"></audio>
+  <style>
+    :root {
+      --bg-main: #14202b;
+      --panel-bg: #1a2533;
+      --input-bg: #0f1724;
+      --text-light: #fff;
+      --text-secondary: #a0aec0;
+      --button-green: #22c55e;
+      --button-cash: #f59e0b;
+      --button-blue: #007aff;
+      --cell-border: #2a3a4a;
+      --overlay-bg: rgba(0,0,0,0.8);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html, body {
+      width:100%; height:100%;
+      font-family:'Inter',sans-serif;
+      background:var(--bg-main);
+      color:var(--text-light);
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+    body { display:flex; flex-direction:column; }
+    .header { background:var(--panel-bg); padding:12px 20px; display:flex; justify-content:center; align-items:center; position:relative; }
+    .balance-add { display:flex; align-items:center; gap:8px; }
+    .balance-label { color:var(--text-secondary); font-size:14px; }
+    .balance-display {
+      background:var(--input-bg);
+      padding:6px 10px;
+      border-radius:4px;
+      font-size:20px;
+      font-weight:700;
+      transition: box-shadow 0.3s ease;
+    }
+    .balance-display.glow { box-shadow: 0 0 10px var(--button-green); }
+    .add-btn { background:var(--button-blue); color:#fff; border:none; padding:6px 10px; border-radius:4px; font-size:16px; cursor:pointer; font-weight:600; }
+    .add-menu {
+      display:none;
+      position:absolute; top:100%; left:50%; transform:translateX(-50%);
+      background:var(--panel-bg);
+      padding:10px;
+      border-radius:4px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.5);
+      margin-top:6px;
+      min-width:200px;
+      gap:8px;
+      display:flex; flex-wrap:wrap;
+      z-index:1000;
+    }
+    .add-menu-title { width:100%; color:var(--text-light); margin-bottom:6px; font-size:14px; }
+    .add-option { background:var(--button-green); color:#fff; border:none; padding:6px 10px; border-radius:4px; font-size:14px; cursor:pointer; font-weight:600; flex:1; text-align:center; }
+    .main { flex:1; display:flex; }
+    .game { flex:1; padding:20px; position:relative; }
+    .sidebar { width:280px; background:var(--panel-bg); padding:20px; display:flex; flex-direction:column; gap:12px; }
+    .control { display:flex; flex-direction:column; gap:6px; }
+    .control label { color:var(--text-secondary); font-size:14px; }
+    .control input, .control select { padding:8px; background:var(--input-bg); border:none; border-radius:4px; color:var(--text-light); font-size:14px; }
+    .extras { display:flex; gap:8px; }
+    .extras button { flex:1; padding:6px; background:var(--input-bg); border:none; border-radius:4px; color:var(--text-light); font-weight:600; cursor:pointer; }
+    .button-row { display:flex; gap:8px; }
+    #betBtn, #cashOutBtn { flex:1; padding:12px; font-size:16px; border:none; border-radius:4px; cursor:pointer; font-weight:600; }
+    #betBtn { background:var(--button-blue); color:#fff; }
+    #cashOutBtn { background:var(--button-green); color:#fff; box-shadow:0 0 8px var(--button-green); }
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:5px;
+      background:var(--panel-bg);
+      padding:10px;
+      border-radius:4px;
+    }
+    .cell { background:var(--input-bg); border:2px solid var(--cell-border); border-radius:4px; width:64px; height:64px; display:flex; align-items:center; justify-content:center; font-size:28px; cursor:pointer; }
+    .cell.disabled { cursor:default; }
+    .pop { animation:pop 0.3s ease; }
+    .shine { animation:shineAnim 0.8s ease-in-out forwards; }
+    .explosion { animation:explodeAnim 0.8s ease forwards; }
+    @keyframes pop {0%,100%{transform:scale(1);}50%{transform:scale(1.2);} }
+    @keyframes shineAnim {0%,100%{box-shadow:0 0 5px var(--button-green);}50%{box-shadow:0 0 15px var(--button-green);} }
+    @keyframes explodeAnim {0%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:0.8;}100%{transform:scale(0);opacity:0;} }
+    .overlay { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--overlay-bg); padding:20px; border-radius:8px; text-align:center; display:none; }
+    .overlay .mult { font-size:32px; margin-bottom:8px; }
+    .overlay .mult.flash { animation:flash 0.5s ease-in-out 4; }
+    .overlay .win { font-size:20px; color:var(--button-green); }
+    @keyframes flash {0%,100%{opacity:1;}50%{opacity:0.2;} }
+    .notification { position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); background:var(--button-cash); color:#fff; padding:20px 40px; border-radius:8px; font-size:24px; display:none; z-index:10; }
+    .notification.win { background:var(--button-green); }
+    /* Responsive CSS - Add to your existing style */
+@media (max-width: 500px) {
+  .cell { width: 55px; height: 55px; font-size: 24px; }
+  .sidebar, .game { padding: 10px; }
+  .balance-display { font-size: 16px; padding: 4px 8px; }
+  .add-btn { font-size: 14px; padding: 4px 8px; }
+  .add-menu { width: 90%; min-width: unset; }
+  .add-option { padding: 5px; font-size: 12px; }
+  .control input, .control select { padding: 6px; font-size: 12px; }
+  .control label { font-size: 12px; }
+  #betBtn, #cashOutBtn { padding: 8px; font-size: 14px; min-width:100px; }
+  .overlay { padding: 10px; width: 90%; }
+  .overlay .mult { font-size: 24px; }
+  .overlay .win { font-size: 16px; }
+  .notification { padding: 10px 20px; font-size: 18px; }
+}
+
+@media (max-width: 360px) {
+  .cell { width: 45px; height: 45px; font-size: 20px; }
+}
+
+html, body {
+  overflow: hidden;
+  height: 100vh;
+}
+
+    @media(max-width:768px) {
+      body { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+      .sidebar { position:fixed; bottom:0; left:0; right:0; width:100%; padding:10px 20px env(safe-area-inset-bottom); z-index:1000; }
+      .main { flex-direction:column; }
+      .game { padding:20px 15px; }
+      .sidebar .control { margin-bottom:8px; }
+      .button-row { margin-top:0; }
+      
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="balance-add">
+      <span class="balance-label">Balance</span>
+      <span class="balance-display" id="balance">$1,000.00</span>
+      <button id="addMoneyBtn" class="add-btn">Add</button>
+    </div>
+    <div id="addMenu" class="add-menu">
+      <div class="add-menu-title">Add money</div>
+      <button class="add-option" data-amt="100">+$100</button>
+      <button class="add-option" data-amt="500">+$500</button>
+      <button class="add-option" data-amt="1000">+$1000</button>
+    </div>
+  </header>
+  <div class="main">
+    <div class="game">
+      <div class="grid" id="grid"></div>
+      <div class="overlay" id="overlay">
+        <div class="mult" id="overlayMult">0×</div>
+        <div class="win" id="overlayWin">$0.00</div>
+      </div>
+      <div class="notification" id="notification"></div>
+    </div>
+    <div class="sidebar">
+      <div class="control">
+        <label>Bet Amount ($)</label>
+        <input type="number" id="betAmount" step="0.01" value="100.00" />
+      </div>
+      <div class="control extras">
+        <button id="half">½</button>
+        <button id="double">2×</button>
+      </div>
+      <div class="control">
+        <label>Mines</label>
+        <select id="mines"></select>
+      </div>
+      <div class="button-row">
+        <button id="betBtn">Bet</button>
+        <button id="cashOutBtn" style="display:none">Cash Out</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const gridEl = document.getElementById('grid'), overlay = document.getElementById('overlay'), notif = document.getElementById('notification'), multEl = document.getElementById('overlayMult'), winEl = document.getElementById('overlayWin');
+    const betBtn = document.getElementById('betBtn'), cashBtn = document.getElementById('cashOutBtn'), addBtn = document.getElementById('addMoneyBtn');
+    const betAmtInput = document.getElementById('betAmount'), minesSel = document.getElementById('mines');
+    const balanceEl = document.getElementById('balance'), addMenu = document.getElementById('addMenu'), addOptions = document.querySelectorAll('.add-option');
+    const chaChing = document.getElementById('chaChingSound');
+    let cells = [], mines = new Set(), revealed = 0, currentMul = 1, roundBet = 0, balance = 1000.0, baseBalance = 1000.0, activeRound = false;
+    const totalCells = 25;
+
+    function updateBalance(val) {
+      balanceEl.textContent = '$' + val.toFixed(2);
+    }
+    function glowBalance() {
+      balanceEl.classList.add('glow');
+      setTimeout(() => balanceEl.classList.remove('glow'), 800);
+    }
+    function showNotification(msg, type) { notif.textContent = msg; notif.className = 'notification ' + type; notif.style.display = 'block'; setTimeout(() => notif.style.display = 'none', 2000); }
+
+    addBtn.onclick = e => { e.stopPropagation(); addMenu.style.display = addMenu.style.display === 'flex' ? 'none' : 'flex'; };
+    document.addEventListener('click', e => { if (!addMenu.contains(e.target) && e.target !== addBtn) addMenu.style.display = 'none'; });
+    addOptions.forEach(o => { o.onclick = () => { balance += +o.dataset.amt; updateBalance(balance); addMenu.style.display = 'none'; }; });
+    for (let i = 1; i <= 24; i++) { const o = document.createElement('option'); o.value = i; o.textContent = i; if (i === 3) o.selected = true; minesSel.append(o); }
+
+    function createGrid() { gridEl.innerHTML = ''; cells = []; for (let i = 0; i < totalCells; i++) { const c = document.createElement('div'); c.className = 'cell'; c.dataset.idx = i; c.onclick = onCellClick; gridEl.append(c); cells.push(c); } }
+    function setupMines() { mines.clear(); const m = +minesSel.value; while (mines.size < m) mines.add(Math.floor(Math.random() * totalCells)); }
+    function onCellClick(e) {
+      if (!activeRound) return;
+      const c = e.currentTarget, idx = +c.dataset.idx;
+      if (c.classList.contains('disabled')) return;
+      c.classList.add('disabled','pop'); c.addEventListener('animationend', ()=> c.classList.remove('pop'),{once:true});
+      if (mines.has(idx)) {
+        activeRound = false; c.textContent='💣'; c.classList.add('explosion'); setTimeout(()=>c.classList.remove('explosion'),800);
+        revealAllMines(); overlay.style.display='none'; showNotification('-$'+roundBet.toFixed(2),'loss'); updateBalance(baseBalance);
+        betBtn.style.flex='1'; betBtn.disabled=false; betAmtInput.disabled=false; minesSel.disabled=false;
+        cashBtn.textContent='Bet Again'; cashBtn.style.display='block'; cashBtn.style.flex='1';
+      } else {
+        revealed++; c.textContent='💎'; c.classList.add('shine'); setTimeout(()=>c.classList.remove('shine'),1000);
+        chaChing.currentTime=0; chaChing.play(); confetti({particleCount:100,spread:60,origin:{y:0.2}});
+        const m=+minesSel.value; const factor=(totalCells-(revealed-1))/(totalCells-m-(revealed-1)); currentMul*=factor;
+        multEl.textContent=currentMul.toFixed(2)+'×'; multEl.classList.add('flash'); multEl.addEventListener('animationend',()=>multEl.classList.remove('flash'),{once:true});
+        const pot=roundBet*currentMul; winEl.textContent='$'+pot.toFixed(2); updateBalance(baseBalance+pot); glowBalance();
+        showOverlay(); cashBtn.textContent='Cash Out +$'+pot.toFixed(2); cashBtn.style.display='block'; cashBtn.style.flex='1'; betBtn.style.flex='1';
+      }
+    }
+    function revealAllMines() { mines.forEach(i=>{ const c=cells[i]; if(!c.classList.contains('disabled')){c.classList.add('disabled');c.textContent='💣';}}); }
+    function showOverlay(){ overlay.style.display='block'; setTimeout(()=>overlay.style.display='none',1500); }
+
+    betBtn.onclick=()=>{
+      if(activeRound) return;
+      const bet=parseFloat(betAmtInput.value)||0;
+      if(bet<=0){alert('Bet > $0.00');return;}
+      if(bet>balance){alert('Not enough funds');return;}
+      roundBet=bet; balance-=bet; baseBalance=balance; updateBalance(balance);
+      revealed=0; currentMul=1; activeRound=true;
+      betBtn.disabled=true; betAmtInput.disabled=true; minesSel.disabled=true;
+      cashBtn.style.display='none'; createGrid(); setupMines(); overlay.style.display='none';
+    };
+    cashBtn.onclick=()=>{
+      if(cashBtn.textContent==='Bet Again'){ cashBtn.style.display='none'; betBtn.style.flex='1'; return; }
+      if(!activeRound) return;
+      const winAmt=roundBet*currentMul; balance+=winAmt; updateBalance(balance);
+      showNotification('+$'+winAmt.toFixed(2),'win');
+      currentMul=1; roundBet=0; activeRound=false;
+      betBtn.disabled=false; betAmtInput.disabled=false; minesSel.disabled=false;
+      createGrid(); setupMines(); overlay.style.display='none';
+    };
+    document.getElementById('half').onclick=()=>{ let v=parseFloat(betAmtInput.value)||0; betAmtInput.value=(v/2).toFixed(2); };
+    document.getElementById('double').onclick=()=>{ let v=parseFloat(betAmtInput.value)||0; betAmtInput.value=(v*2).toFixed(2); };
+    createGrid(); setupMines(); updateBalance(balance);
+  </script>
+</body>
+</html>
