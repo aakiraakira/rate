@@ -12,6 +12,24 @@
   --shadow:0 18px 48px rgba(0,0,0,.45);
   --radius:20px;
 }
+/* Prevent horizontal scroll + improve mobile spacing */
+html, body { overflow-x: hidden; }
+
+/* Buttons wrap nicely on small screens */
+.card-head, .actions { flex-wrap: wrap; gap: 8px; }
+
+/* Mobile sizing */
+@media (max-width: 480px){
+  .app    { padding: 16px 12px 28px; }
+  .card   { padding: 14px; border-radius: 16px; min-height: auto; }
+  .grid   { gap: 14px; grid-template-columns: 1fr; }
+  .btn    { min-width: 0; width: 100%; }
+  #generatedCode { min-height: 260px; font-size: 12px; }
+  .meta   { font-size: 12px; }
+}
+
+/* Small helper text for Place ID / selected business */
+.meta { color: var(--muted); display: block; margin-top: 6px; }
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -144,3 +162,4 @@ body{
 
 /* Subtle helper text */
 .hint{color:var(--muted);font-size:12.5px;margin:2px 0 0}
+
