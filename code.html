@@ -29,27 +29,7 @@
 
         <!-- Keep IDs & structure so codescript.js works -->
         <form id="linkForm" novalidate>
-          <label class="field" for="instagramLink">
-            <span>Instagram Link</span>
-            <input
-              type="url"
-              id="instagramLink"
-              name="instagramLink"
-              placeholder="https://instagram.com/yourprofile"
-              required
-            />
-          </label>
 
-          <label class="field" for="whatsappLink">
-            <span>WhatsApp Link</span>
-            <input
-              type="url"
-              id="whatsappLink"
-              name="whatsappLink"
-              placeholder="https://wa.me/65XXXXXXXX"
-              required
-            />
-          </label>
 
           <label class="field" for="googleReviewLink">
             <span>Google Review Link</span>
@@ -67,9 +47,7 @@
           </div>
         </form>
 
-        <p class="hint">
-          Your JavaScript file (<code>codescript.js</code>) handles generation and copying.
-        </p>
+        
       </section>
 
       <!-- Right: Output -->
@@ -77,6 +55,9 @@
         <div class="card-head">
           <h2 class="card-title">Generated HTML Code</h2>
           <button id="copyButton" class="btn ghost" type="button">Copy to Clipboard</button>
+<button id="downloadButton" class="btn" type="button">Download HTML</button>
+<button id="previewButton" class="btn" type="button">Open Preview</button>
+
         </div>
 
         <!-- Keep the same ID for JS -->
@@ -91,7 +72,7 @@
     </main>
 
     <footer class="footer">
-      <span>Built for speed • Clean UI • No functionality changed</span>
+      <span>Reputifly Software Solutions</span>
     </footer>
   </div>
 
