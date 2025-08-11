@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+  <title>NFC Program Generator</title>
+  <link rel="stylesheet" href="codestyles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+</head>
+<body>
+  <div class="app">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo-dot" aria-hidden="true"></span>
+        <span class="brand-name">NFC Program Generator</span>
+      </div>
+      <p class="sub">Generate your page code instantly.</p>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="grid">
+      <!-- Left: Form -->
+      <section class="card form-card">
+        <h2 class="card-title">Enter the Links</h2>
+
+        <!-- Keep IDs & structure so codescript.js works -->
+        <form id="linkForm" novalidate>
+          <label class="field" for="instagramLink">
+            <span>Instagram Link</span>
+            <input
+              type="url"
+              id="instagramLink"
+              name="instagramLink"
+              placeholder="https://instagram.com/yourprofile"
+              required
+            />
+          </label>
+
+          <label class="field" for="whatsappLink">
+            <span>WhatsApp Link</span>
+            <input
+              type="url"
+              id="whatsappLink"
+              name="whatsappLink"
+              placeholder="https://wa.me/65XXXXXXXX"
+              required
+            />
+          </label>
+
+          <label class="field" for="googleReviewLink">
+            <span>Google Review Link</span>
+            <input
+              type="url"
+              id="googleReviewLink"
+              name="googleReviewLink"
+              placeholder="https://search.google.com/local/writereview?placeid=..."
+              required
+            />
+          </label>
+
+          <div class="actions">
+            <button class="btn primary" type="submit">Generate HTML</button>
+          </div>
+        </form>
+
+        <p class="hint">
+          Your JavaScript file (<code>codescript.js</code>) handles generation and copying.
+        </p>
+      </section>
+
+      <!-- Right: Output -->
+      <section class="card output-card">
+        <div class="card-head">
+          <h2 class="card-title">Generated HTML Code</h2>
+          <button id="copyButton" class="btn ghost" type="button">Copy to Clipboard</button>
+        </div>
+
+        <!-- Keep the same ID for JS -->
+        <textarea
+          id="generatedCode"
+          rows="22"
+          spellcheck="false"
+          placeholder="Click ‘Generate HTML’ to see your code here…"
+          readonly
+        ></textarea>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Built for speed • Clean UI • No functionality changed</span>
+    </footer>
+  </div>
+
+  <script src="codescript.js"></script>
+</body>
+</html>
