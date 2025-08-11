@@ -1,8 +1,7 @@
 document.getElementById('linkForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    const instagramLink = document.getElementById('instagramLink').value;
-    const whatsappLink = document.getElementById('whatsappLink').value;
+    
     const googleReviewLink = document.getElementById('googleReviewLink').value;
 
     const generatedHTML = `
@@ -162,6 +161,30 @@ label:hover .label-description::after {
   pointer-events: none;
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
+/* Feedback Modal */
+.modal-overlay{
+  position:fixed; inset:0;
+  background-color:rgba(0,0,0,0.8);
+  display:none; justify-content:center; align-items:center;
+  z-index:9999;
+}
+.modal-overlay.show{ display:flex !important; }
+.modal{
+  background:#ffffff; color:#000;
+  padding:2rem; border-radius:8px;
+  width:90%; max-width:400px;
+}
+.modal h2{ margin-bottom:1rem; }
+.modal form input,.modal form textarea{
+  width:100%; margin-bottom:1rem; padding:.75rem;
+  border:1px solid #ccc; border-radius:4px;
+  font-family:'Poppins', sans-serif; font-size:.95rem;
+}
+.modal form button{
+  background:#0B111E; color:#fff; border:none;
+  padding:.75rem 1.5rem; cursor:pointer; border-radius:4px;
+  font-family:'Poppins', sans-serif; font-size:.95rem;
+}
 
 .wrapper .tooltip::before {
   position: absolute;
@@ -277,20 +300,47 @@ label:hover .label-description::after {
       </label>
     </div>
   </div>
+    <!-- Modal for Feedback Form (appears for 1–3★) -->
+  <div class="modal-overlay" id="feedbackModal">
+    <div class="modal">
+      <h2>We value your feedback</h2>
+      <form id="feedbackForm">
+        <!-- SAME Web3Forms access_key as your working version -->
+        <input type="hidden" name="access_key" value="f5e91e26-66c1-407e-b13d-32d92ddfe059">
+        <input type="text"   name="name"    placeholder="Your Name"  required>
+        <input type="email"  name="email"   placeholder="Your Email" required>
+        <textarea name="message" rows="4" placeholder="Your Feedback" required></textarea>
+        <!-- Honeypot -->
+        <input type="checkbox" name="botcheck" class="hidden" style="display:none;">
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+
   <script>
+
+
     document.addEventListener('DOMContentLoaded', () => {
       const starInputs = document.querySelectorAll('input[name="stars"]');
       const icons = document.querySelectorAll('.icon');
+      const feedbackModal   = document.getElementById('feedbackModal');
+const ratingContainer = document.querySelector('.container');
+const feedbackForm    = document.getElementById('feedbackForm');
+
 
       starInputs.forEach(star => {
         star.addEventListener('change', (event) => {
           const selectedStar = event.target.id;
           setTimeout(() => {
             if (selectedStar === 'st1' || selectedStar === 'st2' || selectedStar === 'st3') {
-              window.location.href = 'feedback';
-            } else if (selectedStar === 'st4' || selectedStar === 'st5') {
-              window.location.href = '${googleReviewLink}';
-            }
+  
+  ratingContainer.style.display = 'none';
+  feedbackModal.classList.add('show');
+} else if (selectedStar === 'st4' || selectedStar === 'st5') {
+  
+  window.location.href = '${googleReviewLink}';
+}
+
           }, 500);
         });
       });
@@ -310,12 +360,38 @@ label:hover .label-description::after {
         });
       });
     });
+    feedbackForm.addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const formData   = new FormData(this);
+  const objectData = {};
+  formData.forEach((value, key) => (objectData[key] = value));
+
+  try {
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(objectData),
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      this.innerHTML = '<p style="font-size:1.2rem;text-align:center;">Thank you for your feedback!</p>';
+    } else {
+      this.innerHTML = '<p>Something went wrong. Please try again later.</p>';
+    }
+  } catch (error) {
+    this.innerHTML = '<p>Something went wrong. Please try again later.</p>';
+  }
+});
+
   </script>
 </body>
 </html>
 `;
 
-    document.getElementById('generatedCode').textContent = generatedHTML;
+    document.getElementById('generatedCode').value = generatedHTML;
+
 });
 
 document.getElementById('copyButton').addEventListener('click', function() {
@@ -324,4 +400,41 @@ document.getElementById('copyButton').addEventListener('click', function() {
     document.execCommand('copy');
     alert('HTML code copied to clipboard');
 });
+// Download as .html (prompts for file name)
+document.getElementById('downloadButton').addEventListener('click', function () {
+  const codeEl = document.getElementById('generatedCode');
+  const code = (codeEl.value || '').trim();
+  if (!code) { alert('Generate the HTML first.'); return; }
 
+  const nameInput = prompt('File name for download (e.g. my-company.html):', 'review-page.html');
+  const fileName = sanitizeFileName(nameInput);
+
+  const blob = new Blob([code], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+// Open a live preview in a new tab
+document.getElementById('previewButton').addEventListener('click', function () {
+  const codeEl = document.getElementById('generatedCode');
+  const code = (codeEl.value || '').trim();
+  if (!code) { alert('Generate the HTML first.'); return; }
+
+  const w = window.open('', '_blank');
+  if (!w) { alert('Pop-up blocked. Allow pop-ups to preview.'); return; }
+  w.document.open();
+  w.document.write(code);
+  w.document.close();
+});
+
+function sanitizeFileName(name) {
+  name = (name || 'review-page.html').trim();
+  if (!name.toLowerCase().endsWith('.html')) name += '.html';
+  return name.replace(/[^\w.\-]+/g, '_');
+}
